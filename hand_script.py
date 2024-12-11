@@ -11,8 +11,7 @@ rl.duplicate_rename_joints()
 rl.add_fkFK_cntrls()
 
 # create IK handles for each finger, set prefered angle + basic rotate plane solver (fingers somewhat work but still twist uncontrollably)
-
-# add a polevector to each finger? this is such and overkill but the fingers twist :(
+rl.create_ik_handle()
 
 # create IK FK control
 rl.ik_fk_switch()
@@ -21,3 +20,4 @@ rl.ik_fk_switch()
 rl.leg_blend()
 rl.sdk_ik_fk_visibility()
 # create a wrist twist (adds serveral joints and hooks them up together with the result chain controls)
+
