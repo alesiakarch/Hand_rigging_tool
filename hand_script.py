@@ -19,5 +19,8 @@ rl.ik_fk_switch()
 # hook IK FK together
 rl.leg_blend()
 rl.sdk_ik_fk_visibility()
+
 # create a wrist twist (adds serveral joints and hooks them up together with the result chain controls)
+rl.add_twist()
+
 

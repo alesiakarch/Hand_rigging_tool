@@ -193,3 +193,39 @@ def sdk_ik_fk_visibility (fk_chain, ik_chain, ik_cntrls, ik_fk_switch='R_Leg_Swi
             cmds.setDrivenKeyframe(fk_chain[i], ik_chain[i], ik_cntrls[0], knee_locator, ik_cntrls[1], cd=ik_fk_switch)
         else:
             cmds.setDrivenKeyframe(fk_chain[i], ik_chain[i], ik_cntrls[0], ik_cntrls[1], cd=ik_fk_switch)
+
+def add_twist(jnt_chain): # adds twist to the joint chain
+    '''
+    add twist
+
+    jnt_chain : names of joint chain, from first to last, with the twist jnts in the middle
+
+    On Exit:
+
+    adds mulpiply divides to hook up the rotation of the joints to the hand joint
+
+    '''
+    # take the hand joint and the amount of twist joints
+    # hook each up to a multiplyDivide node
+    # set the multiplyDivide node to miltiply but 100/amount of twist joints
+    for i in range (1, len(jnt_chain)-1):
+        multDiv = cmds.shadingNode('multiplyDivide', asUtility = True) # create multiplyDivide
+        cmds.connectAttr(jnt_chain[-1]+'.rotateX', multDiv+'.input1X') # connect multDiv to master joint
+        cmds.connectAttr(multDiv+'.outputX', jnt_chain[i]+'.rotateX') # connect the twist joint to multDiv output
+        weight = i * (1/(len(jnt_chain)-1)) # calculate weight for each twist joint
+        cmds.setAttr(multDiv+'.input2X', weight) 
+
+def ik_fk_match(ik_chain, fk_chain): # matches IK to FK
+    # '''
+    # ik fk match
+
+    # ik_chain : names of ik joints
+    # fk_chain : names of fk joints
+
+    # On Exit:
+
+    # matches the IK to FK
+
+    # '''
+    # for i in range(0, len(ik_chain)):
+    #     cmds.matchTransform(ik_chain[i], fk_chain[i], pos=1, rot=1)
