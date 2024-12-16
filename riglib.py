@@ -3,29 +3,29 @@ import maya.cmds as cmds
 sys.path.insert(0, cmds.workspace(expandName = 'scripts'))
 sys.path.insert(0, cmds.workspace(expandName = 'scenes'))
 
-def duplicate_rename_joints(in_chain, postfix): # duplicates joints to prepare for the IK/FK setup
-        '''
-        duplicate and rename joitns
+def duplicate_rename_joints(in_chain): # duplicates joints to prepare for the IK/FK setup
+    '''
+    duplicate and rename joitns
 
-        in_chain : list names of input joints, starting from the IK/FK parent JNT
-        out_chain : list names of output joints
+    in_chain : list names of input joints, starting from the IK/FK parent JNT
+    out_chain : list names of output joints
 
-        On Exit:
-        duplicates the chain twice
-        renames input joints to output joints
+    On Exit:
+    duplicates the chain twice
+    renames input joints to output joints
 
-        '''
-        #duplicates fk chain
-        cmds.duplicate(in_chain[0], name=in_chain[0].replace('JNT', 'FK_JNT'), renameChildren=True)
+    '''
+    #duplicates fk chain
+    cmds.duplicate(in_chain[0], name=in_chain[0].replace('JNT', 'FK_JNT'), renameChildren=True)
 
-        #duplicates ik chain
-        cmds.duplicate(in_chain[0], name=in_chain[0].replace('JNT','IK_JNT'), renameChildren=True)
+    #duplicates ik chain
+    cmds.duplicate(in_chain[0], name=in_chain[0].replace('JNT','IK_JNT'), renameChildren=True)
 
-        # renames the in chain into a result chain
-        for i in range(1, len(in_chain)):
-            cmds.rename (in_chain[i], in_chain[i].replace('JNT','result_JNT'))
+    # renames the in chain into a result chain
+    for i in range(0, len(in_chain)):
+        cmds.rename (in_chain[i], in_chain[i].replace('JNT','result_JNT'))
 
-def add_fkFK_cntrls (FK_chain, circle_suffix='_CNTRL'): # parents NURBS circles to the FK joint chain
+def add_fk_cntrls (fk_chain, circle_suffix='_CNTRL'): # parents NURBS circles to the FK joint chain
                               
     ''' 
     add FK controls
@@ -40,13 +40,13 @@ def add_fkFK_cntrls (FK_chain, circle_suffix='_CNTRL'): # parents NURBS circles 
 
     '''
     #creates fk controls
-    for i in range(0,len(FK_chain)-1):
-        control_name=FK_chain[i]+circle_suffix
+    for i in range(0,len(fk_chain)-1):  
+        control_name=fk_chain[i]+circle_suffix
         cmds.circle(name=control_name,radius=10)
-        cmds.parent (control_name+'Shape', FK_chain[i], add=True, shape=True)
+        cmds.parent (control_name+'Shape', fk_chain[i], add=True, shape=True)
         cmds.delete (control_name)   
 
-def create_ik_handle(ik_chain, joint_orientation = 'xyz', ik_suffix='_Handle', effector_suffix='_effector', ):
+def create_ik_handle(ik_chain, joint_orientation = 'xyz', ik_suffix='_Handle', effector_suffix='_effector'):
    
     '''
     create IK handles
@@ -147,7 +147,7 @@ def leg_blend(fk_chain, ik_chain, result_chain, switch_cntrl): # hooks up IK/FK 
         
         cmds.connectAttr(switch_cntrl+'.IK_FK_Switch', blends_names[i]+'_Trans'+'.blender', f=1)
 
-def sdk_ik_fk_visibility (fk_chain, ik_chain, ik_cntrls, ik_fk_switch='R_Leg_Switch_CNTRL.IK_FK_Switch', knee_locator = ' '):  # sets IK/FK visibility
+def sdk_ik_fk_visibility (fk_chain, ik_chain, ik_cntrls, ik_fk_switch='R_Leg_Switch_CNTRL' + '.IK_FK_Switch', knee_locator = ' '):  # sets IK/FK visibility
     '''
     visibility set driven key
 
@@ -227,5 +227,5 @@ def ik_fk_match(ik_chain, fk_chain): # matches IK to FK
     # matches the IK to FK
 
     # '''
-    # for i in range(0, len(ik_chain)):
-    #     cmds.matchTransform(ik_chain[i], fk_chain[i], pos=1, rot=1)
+    for i in range(0, len(ik_chain)):
+        cmds.matchTransform(ik_chain[i], fk_chain[i], pos=1, rot=1)
