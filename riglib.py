@@ -3,7 +3,7 @@ import maya.cmds as cmds
 sys.path.insert(0, cmds.workspace(expandName = 'scripts'))
 sys.path.insert(0, cmds.workspace(expandName = 'scenes'))
 
-def duplicate_rename_joints(in_chain): # duplicates joints to prepare for the IK/FK setup
+def duplicate_rename_joints(in_chain, fk_chain, ik_chain): # duplicates joints to prepare for the IK/FK setup
     '''
     duplicate and rename joitns
 
@@ -16,14 +16,25 @@ def duplicate_rename_joints(in_chain): # duplicates joints to prepare for the IK
 
     '''
     #duplicates fk chain
-    cmds.duplicate(in_chain[0], name=in_chain[0].replace('JNT', 'FK_JNT'), renameChildren=True)
 
-    #duplicates ik chain
-    cmds.duplicate(in_chain[0], name=in_chain[0].replace('JNT','IK_JNT'), renameChildren=True)
+    for i in range(0, len(in_chain)):
+
+        cmds.duplicate(in_chain[i], name=fk_chain[i], parentOnly=True)
+        cmds.duplicate(in_chain[i], name=ik_chain[i], parentOnly=True)
+        
+        if i > 0:
+            cmds.parent(fk_chain[i], fk_chain[i-1])
+            cmds.parent(ik_chain[i], ik_chain[i-1])
+        else:
+            continue
 
     # renames the in chain into a result chain
     for i in range(0, len(in_chain)):
         cmds.rename (in_chain[i], in_chain[i].replace('JNT','result_JNT'))
+
+    cmds.group(in_chain[0].replace('JNT','result_JNT'),
+               fk_chain[0], ik_chain[0], 
+               name = in_chain[0].replace('JNT','GRP'))
 
 def add_fk_cntrls (fk_chain, circle_suffix='_CNTRL'): # parents NURBS circles to the FK joint chain
                               
@@ -42,7 +53,7 @@ def add_fk_cntrls (fk_chain, circle_suffix='_CNTRL'): # parents NURBS circles to
     #creates fk controls
     for i in range(0,len(fk_chain)-1):  
         control_name=fk_chain[i]+circle_suffix
-        cmds.circle(name=control_name,radius=10)
+        cmds.circle(name=control_name,radius=2)
         cmds.parent (control_name+'Shape', fk_chain[i], add=True, shape=True)
         cmds.delete (control_name)   
 
