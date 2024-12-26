@@ -57,7 +57,7 @@ def add_fk_cntrls (fk_chain, circle_suffix='_CNTRL'): # parents NURBS circles to
         cmds.parent (control_name+'Shape', fk_chain[i], add=True, shape=True)
         cmds.delete (control_name)   
 
-def create_ik_handle(ik_chain, joint_orientation = 'xyz', ik_suffix='_Handle', effector_suffix='_effector'):
+def create_ik_handle(ik_chain, ik_cntrl, joint_orientation = 'xyz', ik_suffix='_Handle', effector_suffix='_effector', ):
    
     '''
     create IK handles
@@ -81,6 +81,10 @@ def create_ik_handle(ik_chain, joint_orientation = 'xyz', ik_suffix='_Handle', e
     cmds.ikHandle(name = handle_name)
     effector_name = handle_name + effector_suffix
     cmds.rename('effector1',effector_name)
+    cmds.matchTransform(ik_cntrl, ik_chain[-1])
+    cmds.makeIdentity(ik_cntrl, apply = True)
+    cmds.parent(handle_name, ik_cntrl)
+
 
 def ik_fk_switch(switch_name, snap_jnt): # create IK/FK control
 
@@ -174,36 +178,36 @@ def sdk_ik_fk_visibility (fk_chain, ik_chain, ik_cntrls, ik_fk_switch='R_Leg_Swi
      
     '''     
     # add visibility to the lists 
+    fk_vis_chain = []
+    ik_vis_chain = []
 
     for i in range(0, len(fk_chain)):
-        fk_chain[i] = fk_chain[i].replace('JNT', 'JNT.visibility')     
-        ik_chain[i] = ik_chain[i].replace('JNT', 'JNT.visibility')     
+        fk_vis_chain.append(fk_chain[i] + '.visibility')     
+        ik_vis_chain.append(ik_chain[i] + '.visibility')     
 
-    for i in range(0, len(ik_cntrls)):
-        ik_cntrls[i] = ik_cntrls[i].replace('CNTRL', 'CNTRL.visibility')    
+    ik_cntrls = ik_cntrls + '.visibility'
 
     #makes visibility set drive keys
     for i in range(0,len(fk_chain)):
         cmds.setAttr(ik_fk_switch, 0)
-        cmds.setAttr(ik_cntrls[0], 1)
-        cmds.setAttr(ik_cntrls[1], 1)
-        cmds.setAttr(fk_chain[i], 0)
-        cmds.setAttr(ik_chain[i], 1)
-        if knee_locator == ' ':
+        cmds.setAttr(ik_cntrls, 1)
+        cmds.setAttr(fk_vis_chain[i], 0)
+        cmds.setAttr(ik_vis_chain[i], 1)
+        if knee_locator != ' ':
             cmds.setAttr(knee_locator, 1)
-            cmds.setDrivenKeyframe(fk_chain[i], ik_chain[i], ik_cntrls[0], knee_locator, ik_cntrls[1], cd=ik_fk_switch)
+            cmds.setDrivenKeyframe(fk_vis_chain[i], ik_vis_chain[i], ik_cntrls, knee_locator, cd=ik_fk_switch)
         else:
-            cmds.setDrivenKeyframe(fk_chain[i], ik_chain[i], ik_cntrls[0], ik_cntrls[1], cd=ik_fk_switch)
+            cmds.setDrivenKeyframe(fk_vis_chain[i], ik_vis_chain[i], ik_cntrls, cd=ik_fk_switch)
+
         cmds.setAttr(ik_fk_switch, 1)
-        cmds.setAttr(ik_cntrls[0], 0)
-        cmds.setAttr(ik_cntrls[1], 0)
-        cmds.setAttr(fk_chain[i], 1)
-        cmds.setAttr(ik_chain[i], 0)
-        if knee_locator == ' ':
+        cmds.setAttr(ik_cntrls, 0)
+        cmds.setAttr(fk_vis_chain[i], 1)
+        cmds.setAttr(ik_vis_chain[i], 0)
+        if knee_locator != ' ':
             cmds.setAttr(knee_locator, 0)
-            cmds.setDrivenKeyframe(fk_chain[i], ik_chain[i], ik_cntrls[0], knee_locator, ik_cntrls[1], cd=ik_fk_switch)
+            cmds.setDrivenKeyframe(fk_vis_chain[i], ik_vis_chain[i], ik_cntrls, knee_locator, cd=ik_fk_switch)
         else:
-            cmds.setDrivenKeyframe(fk_chain[i], ik_chain[i], ik_cntrls[0], ik_cntrls[1], cd=ik_fk_switch)
+            cmds.setDrivenKeyframe(fk_vis_chain[i], ik_vis_chain[i], ik_cntrls, cd=ik_fk_switch)
 
 def add_twist(jnt_chain): # adds twist to the joint chain
     '''
