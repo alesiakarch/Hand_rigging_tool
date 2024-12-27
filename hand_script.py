@@ -60,5 +60,18 @@ for i in range(4):
     # add this function
     rl.sdk_ik_fk_visibility(fk_finger_chain, ik_finger_chain, ik_cntrl, switch_names[i] + '.IK_FK_Switch')
     
-    #rig done now grouping
+# add spread, curl 
+cmds.select('Index_FK_JNT_1')
+cmds.addAttr(longName = 'Spread', attributeType = 'float', defaultValue = 0.0, minValue = 0.0, keyable = True)
+# hooks up spread
+cmds.addAttr(attributeType = 'float', defaultValue = 0.0, longName = 'Master_Curl', minValue = 0.0, maxValue = 90.0, keyable = True)
+# hooks up hand cntrl to finger curl
+cmds.addAttr(attributeType = 'float', defaultValue = 0.0, longName = 'Curl', parent = 'Master_Curl', minValue = 0.0, maxValue = 90.0, keyable = True)
+# hooks up curl for each finger
+
+#rig done now grouping
+cmds.group('Index_IK_CNTRL', 'Middle_IK_CNTRL', 'Ring_IK_CNTRL', 'Pinky_IK_CNTRL', name = 'Hand_CNTRL_GRP')
+cmds.group('Hand_base_JNT', name = 'Hand_JNT_GRP_DO_NOT_TOUCH')
+cmds.group('Hand_JNT_GRP_DO_NOT_TOUCH', 'Hand_CNTRL_GRP', 'Hand_GEO', name = 'Hand_Rig')
+
     
