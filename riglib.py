@@ -85,7 +85,6 @@ def create_ik_handle(ik_chain, ik_cntrl, joint_orientation = 'xyz', ik_suffix='_
     cmds.makeIdentity(ik_cntrl, apply = True)
     cmds.parent(handle_name, ik_cntrl)
 
-
 def ik_fk_switch(switch_name, snap_jnt): # create IK/FK control
 
     '''

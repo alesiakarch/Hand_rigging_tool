@@ -59,16 +59,49 @@ for i in range(4):
     rl.leg_blend(fk_finger_chain, ik_finger_chain, result_finger_chain, switch_names[i])
     # add this function
     rl.sdk_ik_fk_visibility(fk_finger_chain, ik_finger_chain, ik_cntrl, switch_names[i] + '.IK_FK_Switch')
+    # add curl 
+    cmds.select(fk_finger_chain[0])
+    cmds.addAttr(longName = 'Curl', attributeType = 'float', defaultValue = 0.0, minValue = -10.0, keyable = True)
+    cmds.setAttr(fk_finger_chain[0] + '.rz', 10)
+    cmds.setAttr(fk_finger_chain[1] + '.rz', 10)
+    cmds.setAttr(fk_finger_chain[2] + '.rz', 10)
+    cmds.setAttr(fk_finger_chain[0] + '.Curl', -10)
+    cmds.setDrivenKeyframe(fk_finger_chain[0] + '.rz', fk_finger_chain[1] + '.rz', fk_finger_chain[2] + '.rz', cd = fk_finger_chain[0] + '.Curl')
+    cmds.setAttr(fk_finger_chain[0] + '.Curl', 90)
+    cmds.setAttr(fk_finger_chain[0] + '.rz', -90)
+    cmds.setAttr(fk_finger_chain[1] + '.rz', -90)
+    cmds.setAttr(fk_finger_chain[2] + '.rz', -90)
+    cmds.setDrivenKeyframe(fk_finger_chain[0] + '.rz', fk_finger_chain[1] + '.rz', fk_finger_chain[2] + '.rz', cd = fk_finger_chain[0] + '.Curl')
     
-# add spread, curl 
-cmds.select('Index_FK_JNT_1')
-cmds.addAttr(longName = 'Spread', attributeType = 'float', defaultValue = 0.0, minValue = 0.0, keyable = True)
-# hooks up spread
-cmds.addAttr(attributeType = 'float', defaultValue = 0.0, longName = 'Master_Curl', minValue = 0.0, maxValue = 90.0, keyable = True)
-# hooks up hand cntrl to finger curl
-cmds.addAttr(attributeType = 'float', defaultValue = 0.0, longName = 'Curl', parent = 'Master_Curl', minValue = 0.0, maxValue = 90.0, keyable = True)
-# hooks up curl for each finger
+cmds.select('Hand_rot_JNT')
+cmds.addAttr(attributeType = 'float', defaultValue = 0.0, longName = 'Master_Curl', minValue = -10.0, maxValue = 90.0, keyable = True)
+cmds.setAttr('Hand_rot_JNT.Master_Curl', 90)
+cmds.setAttr('Index_FK_JNT_1.Curl', 90)
+cmds.setAttr('Middle_FK_JNT_1.Curl', 90)
+cmds.setAttr('Ring_FK_JNT_1.Curl', 90)
+cmds.setAttr('Pinky_FK_JNT_1.Curl', 90)
+cmds.setDrivenKeyframe('Index_FK_JNT_1.Curl', 'Middle_FK_JNT_1.Curl', 'Ring_FK_JNT_1.Curl', 'Pinky_FK_JNT_1.Curl', cd = 'Hand_rot_JNT.Master_Curl')
+cmds.setAttr('Hand_rot_JNT.Master_Curl', -10)
+cmds.setAttr('Index_FK_JNT_1.Curl', -10)
+cmds.setAttr('Middle_FK_JNT_1.Curl', -10)
+cmds.setAttr('Ring_FK_JNT_1.Curl', -10)
+cmds.setAttr('Pinky_FK_JNT_1.Curl', -10)
+cmds.setDrivenKeyframe('Index_FK_JNT_1.Curl', 'Middle_FK_JNT_1.Curl', 'Ring_FK_JNT_1.Curl', 'Pinky_FK_JNT_1.Curl', cd = 'Hand_rot_JNT.Master_Curl')
 
+# hooks up spread for each finger
+cmds.addAttr(attributeType = 'float', defaultValue = 0.0, longName = 'Spread', minValue = -10.0, maxValue = 10,keyable = True)
+cmds.setAttr('Hand_rot_JNT.Spread', -10)
+cmds.setAttr('Index_FK_JNT_1.ry', 10)
+cmds.setAttr('Middle_FK_JNT_1.ry', 3)
+cmds.setAttr('Ring_FK_JNT_1.ry', -7)
+cmds.setAttr('Pinky_FK_JNT_1.ry', -10)
+cmds.setDrivenKeyframe('Index_FK_JNT_1.ry', 'Middle_FK_JNT_1.ry', 'Ring_FK_JNT_1.ry', 'Pinky_FK_JNT_1.ry', cd = 'Hand_rot_JNT.Spread')
+cmds.setAttr('Hand_rot_JNT.Spread', 10)
+cmds.setAttr('Index_FK_JNT_1.ry', -30)
+cmds.setAttr('Middle_FK_JNT_1.ry', -10)
+cmds.setAttr('Ring_FK_JNT_1.ry', 10)
+cmds.setAttr('Pinky_FK_JNT_1.ry', 30)
+cmds.setDrivenKeyframe('Index_FK_JNT_1.ry', 'Middle_FK_JNT_1.ry', 'Ring_FK_JNT_1.ry', 'Pinky_FK_JNT_1.ry', cd = 'Hand_rot_JNT.Spread')
 #rig done now grouping
 cmds.group('Index_IK_CNTRL', 'Middle_IK_CNTRL', 'Ring_IK_CNTRL', 'Pinky_IK_CNTRL', name = 'Hand_CNTRL_GRP')
 cmds.group('Hand_base_JNT', name = 'Hand_JNT_GRP_DO_NOT_TOUCH')
