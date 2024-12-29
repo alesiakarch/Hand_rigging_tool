@@ -72,6 +72,11 @@ for i in range(4):
     cmds.setAttr(fk_finger_chain[1] + '.rz', -90)
     cmds.setAttr(fk_finger_chain[2] + '.rz', -90)
     cmds.setDrivenKeyframe(fk_finger_chain[0] + '.rz', fk_finger_chain[1] + '.rz', fk_finger_chain[2] + '.rz', cd = fk_finger_chain[0] + '.Curl')
+    cmds.setAttr(fk_finger_chain[0] + '.Curl', 0)
+    cmds.setAttr(fk_finger_chain[0] + '.rz', 0)
+    cmds.setAttr(fk_finger_chain[1] + '.rz', 0)
+    cmds.setAttr(fk_finger_chain[2] + '.rz', 0)
+    cmds.setDrivenKeyframe(fk_finger_chain[0] + '.rz', fk_finger_chain[1] + '.rz', fk_finger_chain[2] + '.rz', cd = fk_finger_chain[0] + '.Curl')
     
 cmds.select('Hand_rot_JNT')
 cmds.addAttr(attributeType = 'float', defaultValue = 0.0, longName = 'Master_Curl', minValue = -10.0, maxValue = 90.0, keyable = True)
@@ -86,6 +91,12 @@ cmds.setAttr('Index_FK_JNT_1.Curl', -10)
 cmds.setAttr('Middle_FK_JNT_1.Curl', -10)
 cmds.setAttr('Ring_FK_JNT_1.Curl', -10)
 cmds.setAttr('Pinky_FK_JNT_1.Curl', -10)
+cmds.setDrivenKeyframe('Index_FK_JNT_1.Curl', 'Middle_FK_JNT_1.Curl', 'Ring_FK_JNT_1.Curl', 'Pinky_FK_JNT_1.Curl', cd = 'Hand_rot_JNT.Master_Curl')
+cmds.setAttr('Hand_rot_JNT.Master_Curl', 0)
+cmds.setAttr('Index_FK_JNT_1.Curl', 0)
+cmds.setAttr('Middle_FK_JNT_1.Curl', 0)
+cmds.setAttr('Ring_FK_JNT_1.Curl', 0)
+cmds.setAttr('Pinky_FK_JNT_1.Curl', 0)
 cmds.setDrivenKeyframe('Index_FK_JNT_1.Curl', 'Middle_FK_JNT_1.Curl', 'Ring_FK_JNT_1.Curl', 'Pinky_FK_JNT_1.Curl', cd = 'Hand_rot_JNT.Master_Curl')
 
 # hooks up spread for each finger
@@ -102,6 +113,7 @@ cmds.setAttr('Middle_FK_JNT_1.ry', -10)
 cmds.setAttr('Ring_FK_JNT_1.ry', 10)
 cmds.setAttr('Pinky_FK_JNT_1.ry', 30)
 cmds.setDrivenKeyframe('Index_FK_JNT_1.ry', 'Middle_FK_JNT_1.ry', 'Ring_FK_JNT_1.ry', 'Pinky_FK_JNT_1.ry', cd = 'Hand_rot_JNT.Spread')
+
 #rig done now grouping
 cmds.group('Index_IK_CNTRL', 'Middle_IK_CNTRL', 'Ring_IK_CNTRL', 'Pinky_IK_CNTRL', name = 'Hand_CNTRL_GRP')
 cmds.group('Hand_base_JNT', name = 'Hand_JNT_GRP_DO_NOT_TOUCH')

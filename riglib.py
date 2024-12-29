@@ -57,7 +57,7 @@ def add_fk_cntrls (fk_chain, circle_suffix='_CNTRL'): # parents NURBS circles to
         cmds.parent (control_name+'Shape', fk_chain[i], add=True, shape=True)
         cmds.delete (control_name)   
 
-def create_ik_handle(ik_chain, ik_cntrl, joint_orientation = 'xyz', ik_suffix='_Handle', effector_suffix='_effector', ):
+def create_ik_handle(ik_chain, ik_cntrl, joint_orientation = 'xyz', up_vector = 'yup', ik_suffix='_Handle', effector_suffix='_effector', ):
    
     '''
     create IK handles
@@ -73,7 +73,7 @@ def create_ik_handle(ik_chain, ik_cntrl, joint_orientation = 'xyz', ik_suffix='_
 
     '''
     # select orient joints # set prefered angle
-    cmds.joint(ik_chain, edit = True, orientJoint = joint_orientation, setPreferredAngles = True)
+    cmds.joint(ik_chain, edit = True, orientJoint = joint_orientation, sao = up_vector, setPreferredAngles = True)
    
     # create rotate plane solver IK handle, select first and last jnt
     handle_name=ik_chain[0] + ik_suffix
