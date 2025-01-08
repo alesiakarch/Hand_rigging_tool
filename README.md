@@ -1,6 +1,6 @@
 # Hand_rigging_tool
 
-This set of pythong scripts is used to create a hand rig, using some functionality of my rigging library,
+This set of python scripts is used to create a hand rig, using some functionality of my rigging library,
 developed for this project.
 
 To use the scripts:
