@@ -236,33 +236,3 @@ def add_twist(jnt_chain): # adds twist to the joint chain
         cmds.connectAttr(multDiv+'.outputX', jnt_chain[i]+'.rotateX') # connect the twist joint to multDiv output
         weight = i * (1/(len(jnt_chain)-1)) # calculate weight for each twist joint
         cmds.setAttr(multDiv+'.input2X', weight) 
-
-def ik_fk_match(ik_chain, fk_chain): # matches IK to FK
-    # '''
-    # ik fk match
-
-    # ik_chain : names of ik joints
-    # fk_chain : names of fk joints
-
-    # On Exit:
-
-    # matches the IK to FK
-
-    # '''
-    for i in range(0, len(ik_chain)):
-        cmds.matchTransform(ik_chain[i], fk_chain[i], pos=1, rot=1)
-
-def fk_ik_match(fk_chain, ik_chain): # matches FK to IK
-    # '''
-    # fk ik match
-
-    # ik_chain : names of ik joints
-    # fk_chain : names of fk joints
-
-    # On Exit:
-
-    # matches the FK to IK
-
-    # '''
-    for i in range(0, len(fk_chain)):
-        cmds.matchTransform(fk_chain[i], ik_chain[i], pos=1, rot=1)

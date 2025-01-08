@@ -126,7 +126,8 @@ cmds.setAttr('Pinky_FK_JNT_1.ry', 30)
 cmds.setDrivenKeyframe('Index_FK_JNT_1.ry', 'Middle_FK_JNT_1.ry', 'Ring_FK_JNT_1.ry', 'Pinky_FK_JNT_1.ry', cd = 'Hand_rot_JNT.Spread')
 
 #rig done now grouping
-cmds.group('Index_IK_CNTRL', 'Middle_IK_CNTRL', 'Ring_IK_CNTRL', 'Pinky_IK_CNTRL', name = 'Hand_CNTRL_GRP')
+cmds.group('Index_IK_CNTRL', 'Middle_IK_CNTRL', 'Ring_IK_CNTRL', 'Pinky_IK_CNTRL',
+           'IK_FK_Switch1', 'IK_FK_Switch2', 'IK_FK_Switch3', 'IK_FK_Switch4', name = 'Hand_CNTRL_GRP')
 cmds.group('Hand_base_JNT', name = 'Hand_JNT_GRP_DO_NOT_TOUCH')
 cmds.group('Hand_JNT_GRP_DO_NOT_TOUCH', 'Hand_CNTRL_GRP', 'Hand_GEO', name = 'Hand_Rig')
 
