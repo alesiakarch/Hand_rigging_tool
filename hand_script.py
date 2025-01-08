@@ -4,6 +4,13 @@ import riglib as rl
 sys.path.insert(0, cmds.workspace(expandName = 'scripts'))
 sys.path.insert(0, cmds.workspace(expandName = 'scenes'))
 
+'''
+    Before executing the script: 
+    1. place your joints
+    2. orient joints (just ot be safe!)
+    3. import your IK controls
+'''
+
 def rename_fingers(finger_chain, finger_name):
 	# rename_fingers(list, string)
 	for i in range(0, len(finger_chain)):
@@ -13,6 +20,7 @@ def rename_fingers(finger_chain, finger_name):
 	
 	return finger_chain
 	
+# lists of names required down the line
 in_finger_chain = ['Index_JNT_1', 'Index_JNT_2', 'Index_JNT_3', 'Index_end_JNT_4']
 fingers = ['Index', 'Middle', 'Ring', 'Pinky']
 fk_finger_chain = []
@@ -25,41 +33,43 @@ twist_chain = ['Hand_base_JNT', 'Hand_twist_JNT_1', 'Hand_twist_JNT_2', 'Hand_tw
 ik_cntrl = 'Index_IK_CNTRL'
 
 
-
+# generates ik and fk jnt names
 for i in range(0, len(in_finger_chain)):
     fk_finger_chain.append(in_finger_chain[i].replace('JNT','FK_JNT'))
     ik_finger_chain.append(in_finger_chain[i].replace('JNT','IK_JNT'))
 
-print(fk_finger_chain)
-print(ik_finger_chain)
-
-# master loop that runs all the functions for each finger
+# add fk controls for the hand but its fingers
 rl.add_fk_cntrls(hand_jnts)
+
 # adds twist to the hand
 rl.add_twist(twist_chain)
+
 # add orient jnt to the thumb
 cmds.insertJoint('Thumb_JNT_1')
 cmds.rename('joint1', 'Thumb_orient_JNT')
-#rotate and freeze transforms
 
+# master loop that runs all the functions for each finger
 for i in range(4):
+
+    #sets the correct naming for each loop run
     rename_fingers(in_finger_chain, fingers[i])
     rename_fingers(fk_finger_chain, fingers[i])
     rename_fingers(ik_finger_chain, fingers[i])
     rename_fingers(result_finger_chain, fingers[i])
     
+    # names the IK control
     string_parts = ik_cntrl.split('_', 1) 
     ik_cntrl = fingers[i] + '_' + string_parts[1]
      
+    # setup the rig with riglib functions
     rl.duplicate_rename_joints(in_finger_chain, fk_finger_chain, ik_finger_chain)
     rl.add_fk_cntrls(fk_finger_chain)
     rl.create_ik_handle(ik_finger_chain, ik_cntrl)
     rl.ik_fk_switch('IK_FK_Switch'+str(i+1), snap_jnt[i])
-    # below works only on first finger
     rl.leg_blend(fk_finger_chain, ik_finger_chain, result_finger_chain, switch_names[i])
-    # add this function
     rl.sdk_ik_fk_visibility(fk_finger_chain, ik_finger_chain, ik_cntrl, switch_names[i] + '.IK_FK_Switch')
-    # add curl 
+
+    # add curl sdk 
     cmds.select(fk_finger_chain[0])
     cmds.addAttr(longName = 'Curl', attributeType = 'float', defaultValue = 0.0, minValue = -10.0, keyable = True)
     cmds.setAttr(fk_finger_chain[0] + '.rz', 10)
@@ -77,7 +87,8 @@ for i in range(4):
     cmds.setAttr(fk_finger_chain[1] + '.rz', 0)
     cmds.setAttr(fk_finger_chain[2] + '.rz', 0)
     cmds.setDrivenKeyframe(fk_finger_chain[0] + '.rz', fk_finger_chain[1] + '.rz', fk_finger_chain[2] + '.rz', cd = fk_finger_chain[0] + '.Curl')
-    
+
+# sets up master curl with sdk    
 cmds.select('Hand_rot_JNT')
 cmds.addAttr(attributeType = 'float', defaultValue = 0.0, longName = 'Master_Curl', minValue = -10.0, maxValue = 90.0, keyable = True)
 cmds.setAttr('Hand_rot_JNT.Master_Curl', 90)

@@ -7,15 +7,17 @@ def duplicate_rename_joints(in_chain, fk_chain, ik_chain): # duplicates joints t
     '''
     duplicate and rename joitns
 
-    in_chain : list names of input joints, starting from the IK/FK parent JNT
-    out_chain : list names of output joints
+    in_chain : list names of input joints
+    fk_chain : list of names to assign to a created fk chain
+    ik_chain : list of names to assign to a created ik chain
 
     On Exit:
     duplicates the chain twice
-    renames input joints to output joints
+    renames input joints to result joints
+    groups 3 jnt chains 
 
     '''
-    #duplicates fk chain
+    #duplicates fk ik chain and reparents joints in the correct order to keep naming convention
 
     for i in range(0, len(in_chain)):
 
@@ -32,6 +34,7 @@ def duplicate_rename_joints(in_chain, fk_chain, ik_chain): # duplicates joints t
     for i in range(0, len(in_chain)):
         cmds.rename (in_chain[i], in_chain[i].replace('JNT','result_JNT'))
 
+    #groups the chains into a name_GRP
     cmds.group(in_chain[0].replace('JNT','result_JNT'),
                fk_chain[0], ik_chain[0], 
                name = in_chain[0].replace('JNT','GRP'))
@@ -41,7 +44,7 @@ def add_fk_cntrls (fk_chain, circle_suffix='_CNTRL'): # parents NURBS circles to
     ''' 
     add FK controls
 
-    out_chain : names of FK joints
+    fk_chain : names of FK joints
     circle_suffix : name of suffix for FK controls
 
     On Exit:
@@ -51,25 +54,30 @@ def add_fk_cntrls (fk_chain, circle_suffix='_CNTRL'): # parents NURBS circles to
 
     '''
     #creates fk controls
-    for i in range(0,len(fk_chain)-1):  
-        control_name=fk_chain[i]+circle_suffix
-        cmds.circle(name=control_name,radius=2)
-        cmds.parent (control_name+'Shape', fk_chain[i], add=True, shape=True)
+    for i in range(0, len(fk_chain) - 1):  
+        control_name = fk_chain[i] + circle_suffix
+        cmds.circle(name = control_name, radius = 2)
+        cmds.parent (control_name + 'Shape', fk_chain[i], add = True, shape = True)
         cmds.delete (control_name)   
 
-def create_ik_handle(ik_chain, ik_cntrl, joint_orientation = 'xyz', up_vector = 'yup', ik_suffix='_Handle', effector_suffix='_effector', ):
+def create_ik_handle(ik_chain, ik_cntrl, joint_orientation = 'xyz', up_vector = 'yup', ik_suffix='_Handle', effector_suffix='_effector', ): # creates IK handle 
    
     '''
     create IK handles
 
-    ik_jnts : names of IK joints
+    ik_chain : names of IK joints
+    ik_cntrl : name of IK controls to parent the handle to
+    joint_orientation : string of what to orient the joints to
+    up_vector : string of where should the up vector point in the IK handle settings
     ik_suffix: name of suffix for IK handles
     effector_suffix : name of suffix for the effectors
 
     On Exit:
     selects 2 necessary joints,
-    creates a basic rotate plain ik handle,
+    sets prefered angle
+    creates a rotate plain ik handle,
     renames the effector,
+    parents the handle to IK control
 
     '''
     # select orient joints # set prefered angle
@@ -91,13 +99,13 @@ def ik_fk_switch(switch_name, snap_jnt): # create IK/FK control
     ik fk switch
 
     switch_name : name of the ikfk switch circle
-    snap_jnt : name of the joint to snap the switch control, usually ankle joint
+    snap_jnt : name of the joint to snap the switch control
 
     On Exit:
 
     creates a circle and names as ik fk control
-    snaps to the ankle joint
-    offsets the control behind the knee
+    snaps to the snap joint
+    offsets the control 
     freezes transformations
     adds ik fk switch attribute
     
@@ -106,7 +114,7 @@ def ik_fk_switch(switch_name, snap_jnt): # create IK/FK control
     #creates ik fk switch control
     cmds.circle(name=switch_name, normal=(0,1,0),radius=3)
     cmds.matchTransform(switch_name,snap_jnt, pos=1)
-    cmds.setAttr(switch_name+'.translateX', -20)
+    cmds.setAttr(switch_name+'.translateX', -10)
     cmds.makeIdentity(switch_name, apply=True, t=1, r=1, s=1, n=0)
     cmds.addAttr(longName='IK_FK_Switch',attributeType='float', keyable=1, defaultValue=0, minValue=0, maxValue=1)
 
@@ -117,12 +125,12 @@ def leg_blend(fk_chain, ik_chain, result_chain, switch_cntrl): # hooks up IK/FK 
 
     fk_chain : names of fk joints
     ik_chain : nams of ik joints
-    blends_names : names of blend colours nodes
     result_chain : names of result joints
     switch_cntrl : name of switch control
 
     On Exit:
 
+    generated blend_names,
     creates blendColors nodes for translation and rotation,         
     connects IK and FK rotations and translations to the blend nodes,          
     connects the blend nodes to translation and rotatoin of result joints,           
@@ -168,11 +176,11 @@ def sdk_ik_fk_visibility (fk_chain, ik_chain, ik_cntrls, ik_fk_switch='R_Leg_Swi
     fk_chain : names of fk joints with visibility suffix
     ik_chain : names of ik joints with visibility suffix
     ik_cntrls : names of ik controls with visibility suffix
-    knee_locator : name of the knee locator with visibility suffix
+    knee_locator : name of the pole vector locator if needed, with visibility suffix
     ik_fk_switch : names of ik fk switch control with ik fk switch attribute
 
     On Exit:
-
+    generates visibility chains for ik and fk
     makes set driven keys on joint chains and controls to be hidden in the respective mode
      
     '''     
@@ -186,7 +194,7 @@ def sdk_ik_fk_visibility (fk_chain, ik_chain, ik_cntrls, ik_fk_switch='R_Leg_Swi
 
     ik_cntrls = ik_cntrls + '.visibility'
 
-    #makes visibility set drive keys
+    # makes visibility set drive keys
     for i in range(0,len(fk_chain)):
         cmds.setAttr(ik_fk_switch, 0)
         cmds.setAttr(ik_cntrls, 1)
@@ -243,3 +251,18 @@ def ik_fk_match(ik_chain, fk_chain): # matches IK to FK
     # '''
     for i in range(0, len(ik_chain)):
         cmds.matchTransform(ik_chain[i], fk_chain[i], pos=1, rot=1)
+
+def fk_ik_match(fk_chain, ik_chain): # matches FK to IK
+    # '''
+    # fk ik match
+
+    # ik_chain : names of ik joints
+    # fk_chain : names of fk joints
+
+    # On Exit:
+
+    # matches the FK to IK
+
+    # '''
+    for i in range(0, len(fk_chain)):
+        cmds.matchTransform(fk_chain[i], ik_chain[i], pos=1, rot=1)
