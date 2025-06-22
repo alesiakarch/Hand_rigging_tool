@@ -1,7 +1,7 @@
 # Hand_rigging_tool
 
-This set of python scripts is used to create a hand rig, using some functionality of my rigging library,
-developed for this project.
+This set of python scripts is used to create a hand rig, using some functionality of my rigging library developed for this project.
+Technically, this will be my general rigging repo, where I plan to expand the library and dump any other automation scripts I write. 
 
 To use the scripts:
 
@@ -12,5 +12,11 @@ The Source_code folder also includes the hand_demo.ma to test the script in.
 That file contains the hand joint chain and IK_cntrls. 
 The script does nothing for the skinning part of the process, but there is a hand geo available to test the rig visually. However you will need to attach skin manually.  
 
-After the script's execution the fingers will be in the spread position, and the fk cntrl nurb circled will have to be adjusted manually. 
-The joint chain is created to be optimal, however precise joint placement is very important for IK to bend correctly.
+After the script's execution, the fingers will be in the spread position, and the FK cntrl nurb circled will have to be adjusted manually. 
+The joint chain is created to be optimal; however, precise joint placement is very important for IK to bend correctly.
+
+A sample animation of the hand rigged with this script:
+
+
+https://github.com/user-attachments/assets/4a050b35-6939-47d1-8acb-737f3ba6dba5
+
